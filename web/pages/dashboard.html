@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - SDN Karangsari</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/dashboard.css">
+    <style>
+        /* Logo Styles */
+        .logo-container {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 20px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .logo-icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 18px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .logo-text {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .logo-school {
+            font-weight: 700;
+            font-size: 16px;
+            color: white;
+        }
+
+        .logo-subtitle {
+            font-size: 10px;
+            color: #e2e8f0;
+            opacity: 0.8;
+        }
+
+        /* Welcome Section */
+        .welcome-section {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 30px;
+            border-radius: 12px;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        .welcome-section h2 {
+            font-size: 28px;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+
+        .welcome-section p {
+            opacity: 0.9;
+            font-size: 16px;
+        }
+
+        /* Stats Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 24px;
+            margin-bottom: 40px;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            text-align: center;
+            transition: all 0.3s ease;
+            border: 1px solid #e2e8f0;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        }
+
+        .stat-card h3 {
+            color: #718096;
+            font-size: 14px;
+            margin-bottom: 12px;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .stat-card span {
+            font-size: 36px;
+            font-weight: 700;
+            color: #2d3748;
+            display: block;
+        }
+
+        /* Quick Actions */
+        .quick-actions {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            border: 1px solid #e2e8f0;
+        }
+
+        .quick-actions h3 {
+            margin-bottom: 25px;
+            color: #2d3748;
+            font-size: 20px;
+            font-weight: 600;
+        }
+
+        .action-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 20px;
+        }
+
+        .action-card {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 25px 20px;
+            background: #f7fafc;
+            border-radius: 10px;
+            text-decoration: none;
+            color: #4a5568;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+        }
+
+        .action-card:hover {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3);
+            border-color: #667eea;
+        }
+
+        .action-card div:first-child {
+            font-size: 32px;
+            margin-bottom: 12px;
+            opacity: 0.9;
+        }
+
+        .action-card span {
+            font-size: 14px;
+            font-weight: 600;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <!-- Logo Section -->
+            <div class="logo-container">
+                <div class="logo-icon">🎓</div>
+                <div class="logo-text">
+                    <div class="logo-school">SDN KARANGSARI</div>
+                    <div class="logo-subtitle">MANAJEMEN KELAS</div>
+                </div>
+            </div>
+            
+            <nav class="sidebar-nav">
+                <a href="dashboard.html" class="nav-item active">
+                    <span>📊</span>
+                    <span>Dashboard</span>
+                </a>
+                <a href="manajemen-kelas.html" class="nav-item">
+                    <span>👥</span>
+                    <span>Manajemen Kelas</span>
+                </a>
+                <a href="input-nilai.html" class="nav-item">
+                    <span>📝</span>
+                    <span>Input Nilai</span>
+                </a>
+                <a href="absensi.html" class="nav-item">
+                    <span>✅</span>
+                    <span>Absensi</span>
+                </a>
+                <a href="laporan.html" class="nav-item">
+                    <span>📋</span>
+                    <span>Laporan</span>
+                </a>
+                <button onclick="logout()" class="nav-item logout">
+                    <span>🚪</span>
+                    <span>Logout</span>
+                </button>
+            </nav>
+        </div>
+        
+        <!-- Main Content -->
+        <div class="main-content">
+            <header class="header">
+                <h1 id="welcomeMessage">Dashboard Guru</h1>
+                <div class="user-info">
+                    <span id="userName"></span>
+                    <span id="userRole" class="role-badge"></span>
+                </div>
+            </header>
+            
+            <div class="dashboard-content">
+                <!-- Welcome Section -->
+                <div class="welcome-section">
+                    <h2 id="greetingMessage">Selamat Datang!</h2>
+                    <p id="userInfoText">Sistem Manajemen Kelas SDN Karangsari</p>
+                </div>
+                
+                <!-- Stats Grid -->
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <h3>Total Siswa</h3>
+                        <span id="totalSiswa">0</span>
+                    </div>
+                    <div class="stat-card">
+                        <h3>Kelas Diampu</h3>
+                        <span id="kelasDipegang">-</span>
+                    </div>
+                    <div class="stat-card">
+                        <h3>Mata Pelajaran</h3>
+                        <span id="mapelDipegang">-</span>
+                    </div>
+                    <div class="stat-card">
+                        <h3>Tahun Ajaran</h3>
+                        <span>2025/2026</span>
+                    </div>
+                </div>
+                
+                <!-- Quick Actions -->
+                <div class="quick-actions">
+                    <h3>Akses Cepat</h3>
+                    <div class="action-grid">
+                        <a href="manajemen-kelas.html" class="action-card">
+                            <div>👥</div>
+                            <span>Data Siswa</span>
+                        </a>
+                        <a href="input-nilai.html" class="action-card">
+                            <div>📝</div>
+                            <span>Input Nilai</span>
+                        </a>
+                        <a href="absensi.html" class="action-card">
+                            <div>✅</div>
+                            <span>Absensi</span>
+                        </a>
+                        <a href="laporan.html" class="action-card">
+                            <div>📊</div>
+                            <span>Rekap Nilai</span>
+                        </a>
+                        <a href="laporan.html" class="action-card">
+                            <div>📋</div>
+                            <span>Laporan</span>
+                        </a>
+                        <a href="#" class="action-card">
+                            <div>⚙️</div>
+                            <span>Pengaturan</span>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Recent Activity -->
+                <div class="quick-actions" style="margin-top: 30px;">
+                    <h3>Aktivitas Terkini</h3>
+                    <div id="recentActivities" style="text-align: center; padding: 40px; color: #718096;">
+                        <p>📊 Data aktivitas akan ditampilkan di sini</p>
+                        <small>Fitur dalam pengembangan</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="../js/supabase-config.js"></script>
+    <script src="../js/auth.js"></script>
+    <script>
+        // Dashboard functionality
+        async function loadDashboard() {
+            console.log('📊 Loading dashboard...');
+            
+            const user = checkAuth();
+            if (!user) {
+                console.log('❌ User not authenticated');
+                return;
+            }
+            
+            console.log('✅ User authenticated:', user);
+            
+            // Display user info dengan greeting yang dinamis
+            displayUserInfo(user);
+            
+            // Load statistics
+            await loadStudentStats(user);
+        }
+
+        function displayUserInfo(user) {
+            const now = new Date();
+            const hour = now.getHours();
+            let greeting = 'Selamat Datang';
+            
+            if (hour < 12) greeting = 'Selamat Pagi';
+            else if (hour < 15) greeting = 'Selamat Siang';
+            else if (hour < 19) greeting = 'Selamat Sore';
+            else greeting = 'Selamat Malam';
+
+            document.getElementById('greetingMessage').textContent = `${greeting}, ${user.nama}!`;
+            document.getElementById('welcomeMessage').textContent = `Dashboard ${user.role}`;
+            document.getElementById('userName').textContent = user.nama;
+            document.getElementById('userRole').textContent = user.role;
+            document.getElementById('kelasDipegang').textContent = user.kelas_dipegang || '-';
+            document.getElementById('mapelDipegang').textContent = user.mapel_dipegang || '-';
+            
+            // User info text yang lebih informatif
+            let infoText = `Sistem Manajemen Kelas SDN Karangsari`;
+            if (user.kelas_dipegang) {
+                infoText = `Anda mengampu ${user.kelas_dipegang} - SDN Karangsari`;
+            } else if (user.mapel_dipegang) {
+                infoText = `Anda mengajar ${user.mapel_dipegang} - SDN Karangsari`;
+            }
+            document.getElementById('userInfoText').textContent = infoText;
+        }
+
+        async function loadStudentStats(user) {
+            try {
+                console.log('👥 Loading student stats...');
+                
+                let query = supabase.from('siswa').select('id_siswa', { count: 'exact' });
+                
+                if (user.role === 'Guru Kelas' && user.kelas_dipegang) {
+                    const kelasAngka = user.kelas_dipegang.replace('A', '');
+                    query = query.eq('kelas', kelasAngka);
+                    console.log('Filtering by class:', kelasAngka);
+                }
+                
+                const { count, error } = await query;
+                
+                if (error) {
+                    console.error('Error loading students:', error);
+                } else {
+                    console.log('Student count:', count);
+                    document.getElementById('totalSiswa').textContent = count || 0;
+                }
+            } catch (error) {
+                console.error('Error in loadStudentStats:', error);
+            }
+        }
+
+        function logout() {
+            console.log('🚪 Logging out...');
+            localStorage.removeItem('user');
+            localStorage.removeItem('isLoggedIn');
+            window.location.href = '../index.html';
+        }
+
+        // Add some interactive features
+        document.addEventListener('DOMContentLoaded', function() {
+            loadDashboard();
+            
+            // Add loading animation to stat cards
+            const statCards = document.querySelectorAll('.stat-card');
+            statCards.forEach((card, index) => {
+                card.style.opacity = '0';
+                card.style.transform = 'translateY(20px)';
+                
+                setTimeout(() => {
+                    card.style.transition = 'all 0.5s ease';
+                    card.style.opacity = '1';
+                    card.style.transform = 'translateY(0)';
+                }, index * 100);
+            });
+        });
+    </script>
+</body>
+</html>

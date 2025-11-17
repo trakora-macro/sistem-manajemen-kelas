@@ -1,0 +1,193 @@
+<header class="dashboard-header">
+    <div class="header-left">
+        <div class="logo-header">
+            <img src="assets/images/sd.png" alt="Logo SDN Karangsari" class="logo-small">
+            <div>
+                <h1>SDN Karangsari</h1>
+                <p>Sistem Manajemen Kelas</p>
+            </div>
+        </div>
+    </div>
+    <div class="header-right">
+        <span id="userInfo" class="user-info"></span>
+        <button id="logoutBtn" class="btn btn-secondary">Logout</button>
+    </div>
+</header>
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Management Akademik - SDN Karangsari</title>
+    <link rel="stylesheet" href="assets/css/style.css">
+    <link rel="stylesheet" href="assets/css/admin.css">
+</head>
+<body>
+    <div class="dashboard-container">
+        <header class="dashboard-header">
+            <div class="header-left">
+                <h1>SDN Karangsari</h1>
+                <p>Sistem Manajemen Kelas - Admin</p>
+            </div>
+            <div class="header-right">
+                <span id="userInfo" class="user-info"></span>
+                <button id="logoutBtn" class="btn btn-secondary">Logout</button>
+            </div>
+        </header>
+
+        <div class="dashboard-content">
+            <aside class="sidebar">
+                <nav class="nav-menu">
+                    <ul>
+                        <li><a href="admin-dashboard.html">Dashboard Admin</a></li>
+                        <li><a href="admin-users.html">Manajemen User</a></li>
+                        <li><a href="admin-academic.html" class="active">Management Akademik</a></li>
+                        <li><a href="dashboard.html">Dashboard Guru</a></li>
+                    </ul>
+                </nav>
+            </aside>
+
+            <main class="main-content">
+                <div class="content-header">
+                    <h2>Management Akademik</h2>
+                </div>
+
+                <div class="academic-sections">
+                    <div class="academic-section">
+                        <h3>Tahun Ajaran</h3>
+                        <div class="form-group">
+                            <label for="tahunAjaran">Tahun Ajaran Saat Ini:</label>
+                            <select id="tahunAjaran">
+                                <option value="2023/2024">2023/2024</option>
+                                <option value="2024/2025">2024/2025</option>
+                                <option value="2025/2026">2025/2026</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="semesterAktif">Semester Aktif:</label>
+                            <select id="semesterAktif">
+                                <option value="1">Semester 1</option>
+                                <option value="2">Semester 2</option>
+                            </select>
+                        </div>
+                        <button id="saveAcademicYear" class="btn btn-primary">Simpan Pengaturan</button>
+                    </div>
+
+                    <div class="academic-section">
+                        <h3>Mata Pelajaran</h3>
+                        <div class="table-container">
+                            <table class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th>Kode</th>
+                                        <th>Nama Mata Pelajaran</th>
+                                        <th>Kelas</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>MAT-01</td>
+                                        <td>Matematika</td>
+                                        <td>1-6</td>
+                                        <td><span class="status-active">Aktif</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td>BIN-01</td>
+                                        <td>Bahasa Indonesia</td>
+                                        <td>1-6</td>
+                                        <td><span class="status-active">Aktif</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td>IPA-01</td>
+                                        <td>IPA</td>
+                                        <td>4-6</td>
+                                        <td><span class="status-active">Aktif</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td>IPS-01</td>
+                                        <td>IPS</td>
+                                        <td>4-6</td>
+                                        <td><span class="status-active">Aktif</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td>PKN-01</td>
+                                        <td>PKN</td>
+                                        <td>1-6</td>
+                                        <td><span class="status-active">Aktif</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td>PAI-01</td>
+                                        <td>PAI</td>
+                                        <td>1-6</td>
+                                        <td><span class="status-active">Aktif</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td>PJOK-01</td>
+                                        <td>PJOK</td>
+                                        <td>1-6</td>
+                                        <td><span class="status-active">Aktif</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td>SB-01</td>
+                                        <td>Seni Budaya</td>
+                                        <td>1-6</td>
+                                        <td><span class="status-active">Aktif</span></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div class="academic-section">
+                        <h3>Pengaturan Kelas</h3>
+                        <div class="classes-grid">
+                            <div class="class-card">
+                                <h4>Kelas 1</h4>
+                                <p>Wali Kelas: <span id="waliKelas1">-</span></p>
+                                <p>Jumlah Siswa: <span id="jumlahSiswa1">-</span></p>
+                                <button class="btn btn-secondary btn-small">Atur Wali Kelas</button>
+                            </div>
+                            <div class="class-card">
+                                <h4>Kelas 2</h4>
+                                <p>Wali Kelas: <span id="waliKelas2">-</span></p>
+                                <p>Jumlah Siswa: <span id="jumlahSiswa2">-</span></p>
+                                <button class="btn btn-secondary btn-small">Atur Wali Kelas</button>
+                            </div>
+                            <div class="class-card">
+                                <h4>Kelas 3</h4>
+                                <p>Wali Kelas: <span id="waliKelas3">-</span></p>
+                                <p>Jumlah Siswa: <span id="jumlahSiswa3">-</span></p>
+                                <button class="btn btn-secondary btn-small">Atur Wali Kelas</button>
+                            </div>
+                            <div class="class-card">
+                                <h4>Kelas 4</h4>
+                                <p>Wali Kelas: <span id="waliKelas4">-</span></p>
+                                <p>Jumlah Siswa: <span id="jumlahSiswa4">-</span></p>
+                                <button class="btn btn-secondary btn-small">Atur Wali Kelas</button>
+                            </div>
+                            <div class="class-card">
+                                <h4>Kelas 5</h4>
+                                <p>Wali Kelas: <span id="waliKelas5">-</span></p>
+                                <p>Jumlah Siswa: <span id="jumlahSiswa5">-</span></p>
+                                <button class="btn btn-secondary btn-small">Atur Wali Kelas</button>
+                            </div>
+                            <div class="class-card">
+                                <h4>Kelas 6</h4>
+                                <p>Wali Kelas: <span id="waliKelas6">-</span></p>
+                                <p>Jumlah Siswa: <span id="jumlahSiswa6">-</span></p>
+                                <button class="btn btn-secondary btn-small">Atur Wali Kelas</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <script src="assets/js/config.js"></script>
+    <script src="assets/js/auth.js"></script>
+    <script src="assets/js/api.js"></script>
+    <script src="assets/js/admin.js"></script>
+</body>
+</html>

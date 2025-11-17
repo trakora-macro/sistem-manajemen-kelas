@@ -1,0 +1,725 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manajemen Kelas - SDN Karangsari</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/dashboard.css">
+    <style>
+        /* Logo Styles */
+        .logo-container {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 20px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .logo-icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 18px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .logo-text {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .logo-school {
+            font-weight: 700;
+            font-size: 16px;
+            color: white;
+        }
+
+        .logo-subtitle {
+            font-size: 10px;
+            color: #e2e8f0;
+            opacity: 0.8;
+        }
+
+        /* Filter Section */
+        .filter-section {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        /* Role-based restrictions */
+        .filter-disabled {
+            background-color: #f7fafc !important;
+            color: #a0aec0 !important;
+            cursor: not-allowed !important;
+            border-color: #e2e8f0 !important;
+        }
+
+        .role-info {
+            background: #fffaf0;
+            border: 1px solid #fed7d7;
+            border-radius: 8px;
+            padding: 12px 15px;
+            margin-bottom: 15px;
+            font-size: 14px;
+            color: #c53030;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .role-info.admin {
+            background: #f0fff4;
+            border-color: #9ae6b4;
+            color: #276749;
+        }
+
+        .role-info.guru-mapel {
+            background: #ebf8ff;
+            border-color: #90cdf4;
+            color: #2c5aa0;
+        }
+
+        /* Table Styles */
+        .table-container {
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            margin-top: 20px;
+        }
+
+        .kelas-badge {
+            background: #edf2f7;
+            color: #4a5568;
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .status-badge {
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .status-badge.active {
+            background: #c6f6d5;
+            color: #276749;
+        }
+
+        .status-badge.inactive {
+            background: #fed7d7;
+            color: #c53030;
+        }
+
+        .btn-edit, .btn-delete, .btn-tambah {
+            padding: 6px 12px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 12px;
+            margin-right: 5px;
+            transition: all 0.3s ease;
+        }
+
+        .btn-edit {
+            background: #bee3f8;
+            color: #2c5aa0;
+        }
+
+        .btn-delete {
+            background: #fed7d7;
+            color: #c53030;
+        }
+
+        .btn-tambah {
+            background: #9ae6b4;
+            color: #276749;
+        }
+
+        .btn-edit:hover {
+            background: #90cdf4;
+            transform: translateY(-1px);
+        }
+
+        .btn-delete:hover {
+            background: #feb2b2;
+            transform: translateY(-1px);
+        }
+
+        .btn-tambah:hover {
+            background: #68d391;
+            transform: translateY(-1px);
+        }
+
+        /* Stats Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 24px;
+            margin-bottom: 20px;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            text-align: center;
+            transition: all 0.3s ease;
+            border: 1px solid #e2e8f0;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+        }
+
+        .stat-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .stat-card h3 {
+            color: #718096;
+            font-size: 14px;
+            margin-bottom: 10px;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .stat-card span {
+            font-size: 28px;
+            font-weight: 700;
+            color: #2d3748;
+            display: block;
+        }
+
+        /* Form Controls */
+        select, button {
+            padding: 8px 12px;
+            border: 1px solid #e2e8f0;
+            border-radius: 5px;
+            font-size: 14px;
+        }
+
+        button {
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        button:hover:not(:disabled) {
+            transform: translateY(-1px);
+        }
+
+        button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none !important;
+        }
+
+        /* Loading Animation */
+        .loading-spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #667eea;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #718096;
+        }
+
+        .empty-state-icon {
+            font-size: 64px;
+            margin-bottom: 16px;
+            opacity: 0.5;
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <!-- Logo Section -->
+            <div class="logo-container">
+                <div class="logo-icon">🎓</div>
+                <div class="logo-text">
+                    <div class="logo-school">SDN KARANGSARI</div>
+                    <div class="logo-subtitle">MANAJEMEN KELAS</div>
+                </div>
+            </div>
+            
+            <nav class="sidebar-nav">
+                <a href="dashboard.html" class="nav-item">
+                    <span>📊</span>
+                    <span>Dashboard</span>
+                </a>
+                <a href="manajemen-kelas.html" class="nav-item active">
+                    <span>👥</span>
+                    <span>Manajemen Kelas</span>
+                </a>
+                <a href="input-nilai.html" class="nav-item">
+                    <span>📝</span>
+                    <span>Input Nilai</span>
+                </a>
+                <a href="absensi.html" class="nav-item">
+                    <span>✅</span>
+                    <span>Absensi</span>
+                </a>
+                <a href="laporan.html" class="nav-item">
+                    <span>📋</span>
+                    <span>Laporan</span>
+                </a>
+                <button onclick="logout()" class="nav-item logout">
+                    <span>🚪</span>
+                    <span>Logout</span>
+                </button>
+            </nav>
+        </div>
+        
+        <!-- Main Content -->
+        <div class="main-content">
+            <header class="header">
+                <h1>Manajemen Kelas</h1>
+                <div class="user-info">
+                    <span id="userName"></span>
+                    <span id="userRole" class="role-badge"></span>
+                </div>
+            </header>
+            
+            <div class="dashboard-content">
+                <!-- Role Info Message -->
+                <div id="roleInfoMessage" class="role-info" style="display: none;">
+                    <!-- Pesan info role akan ditampilkan di sini -->
+                </div>
+
+                <!-- Filter Section -->
+                <div class="filter-section">
+                    <div style="display: flex; gap: 15px; align-items: center; flex-wrap: wrap;">
+                        <div>
+                            <label style="display: block; margin-bottom: 5px; font-weight: 500; color: #4a5568;">Pilih Kelas:</label>
+                            <select id="filterKelas" style="padding: 8px 12px; border: 1px solid #e2e8f0; border-radius: 5px; min-width: 120px;">
+                                <option value="all">Semua Kelas</option>
+                                <option value="1">Kelas 1</option>
+                                <option value="2">Kelas 2</option>
+                                <option value="3">Kelas 3</option>
+                                <option value="4">Kelas 4</option>
+                                <option value="5">Kelas 5</option>
+                                <option value="6">Kelas 6</option>
+                            </select>
+                        </div>
+                        <button onclick="loadSiswa()" id="btnTampilkan" style="background: #667eea; color: white; border: none; padding: 8px 16px; border-radius: 5px; cursor: pointer; margin-top: 20px;">
+                            <span id="btnTampilkanText">🔍 Tampilkan Data</span>
+                            <span id="btnTampilkanLoading" style="display: none;" class="loading-spinner"></span>
+                        </button>
+                        <button onclick="exportData()" style="background: #48bb78; color: white; border: none; padding: 8px 16px; border-radius: 5px; cursor: pointer; margin-top: 20px;">
+                            📊 Export Excel
+                        </button>
+                        <button onclick="tambahSiswa()" id="btnTambah" style="background: #ed8936; color: white; border: none; padding: 8px 16px; border-radius: 5px; cursor: pointer; margin-top: 20px;">
+                            👥 Tambah Siswa
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Stats Cards -->
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <h3>Total Siswa</h3>
+                        <span id="totalSiswaCount">0</span>
+                    </div>
+                    <div class="stat-card">
+                        <h3>Siswa Aktif</h3>
+                        <span id="siswaAktifCount">0</span>
+                    </div>
+                    <div class="stat-card">
+                        <h3>Kelas Terpilih</h3>
+                        <span id="kelasTerpilih">-</span>
+                    </div>
+                    <div class="stat-card">
+                        <h3>Hak Akses</h3>
+                        <span id="actionInfo">👆 Pilih Kelas</span>
+                    </div>
+                </div>
+
+                <!-- Students Table -->
+                <div class="table-container">
+                    <div style="padding: 20px; border-bottom: 1px solid #e2e8f0; background: #f7fafc;">
+                        <h3 style="margin: 0; color: #2d3748;">📋 Daftar Siswa</h3>
+                        <small style="color: #718096;" id="tableInfo">Pilih kelas untuk menampilkan data</small>
+                    </div>
+                    
+                    <div style="overflow-x: auto;">
+                        <table style="width: 100%; border-collapse: collapse; min-width: 800px;">
+                            <thead>
+                                <tr style="background: #f7fafc;">
+                                    <th style="padding: 12px; text-align: left; border-bottom: 1px solid #e2e8f0; font-weight: 600; color: #4a5568;">ID Siswa</th>
+                                    <th style="padding: 12px; text-align: left; border-bottom: 1px solid #e2e8f0; font-weight: 600; color: #4a5568;">Nama Siswa</th>
+                                    <th style="padding: 12px; text-align: left; border-bottom: 1px solid #e2e8f0; font-weight: 600; color: #4a5568;">Jenis Kelamin</th>
+                                    <th style="padding: 12px; text-align: left; border-bottom: 1px solid #e2e8f0; font-weight: 600; color: #4a5568;">Kelas</th>
+                                    <th style="padding: 12px; text-align: left; border-bottom: 1px solid #e2e8f0; font-weight: 600; color: #4a5568;">Status</th>
+                                    <th style="padding: 12px; text-align: left; border-bottom: 1px solid #e2e8f0; font-weight: 600; color: #4a5568;">Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody id="siswaTableBody">
+                                <tr>
+                                    <td colspan="6" style="padding: 40px; text-align: center; color: #718096;">
+                                        <div class="empty-state">
+                                            <div class="empty-state-icon">👥</div>
+                                            <p>Pilih kelas untuk menampilkan data siswa</p>
+                                            <small>Gunakan filter di atas untuk memilih kelas</small>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="../js/supabase-config.js"></script>
+    <script src="../js/auth.js"></script>
+    <script>
+        // Manajemen Kelas Functions dengan pembatasan role dan RLS fix
+        let currentUser = null;
+        let isLoading = false;
+
+        async function loadManajemenKelas() {
+            console.log('👥 Loading manajemen kelas...');
+            
+            currentUser = checkAuth();
+            if (!currentUser) {
+                console.log('❌ User not authenticated');
+                return;
+            }
+            
+            console.log('✅ User authenticated:', currentUser);
+            
+            // Display user info
+            document.getElementById('userName').textContent = currentUser.nama;
+            document.getElementById('userRole').textContent = currentUser.role;
+            
+            // Setup filter berdasarkan role
+            setupFilterByRole();
+            
+            // Load data siswa otomatis berdasarkan role
+            await loadSiswa();
+        }
+
+        function setupFilterByRole() {
+            const filterSelect = document.getElementById('filterKelas');
+            const roleInfo = document.getElementById('roleInfoMessage');
+            const btnTambah = document.getElementById('btnTambah');
+            
+            // Reset semua elemen
+            filterSelect.disabled = false;
+            filterSelect.classList.remove('filter-disabled');
+            roleInfo.style.display = 'none';
+            btnTambah.disabled = false;
+
+            if (currentUser.role === 'Guru Kelas' && currentUser.kelas_dipegang) {
+                // Guru kelas hanya bisa akses kelasnya sendiri
+                const kelasAngka = currentUser.kelas_dipegang.replace('A', '');
+                console.log('🎯 Guru kelas detected, restricting to class:', kelasAngka);
+                
+                // Set value dan disable select
+                filterSelect.value = kelasAngka;
+                filterSelect.disabled = true;
+                filterSelect.classList.add('filter-disabled');
+                
+                // Show info message
+                roleInfo.innerHTML = `🔒 <strong>Akses Terbatas:</strong> Anda hanya dapat mengakses data siswa di ${currentUser.kelas_dipegang}`;
+                roleInfo.style.display = 'flex';
+                roleInfo.className = 'role-info';
+                
+                // Update action info
+                document.getElementById('actionInfo').textContent = `Terbatas: ${currentUser.kelas_dipegang}`;
+                document.getElementById('tableInfo').textContent = `Data siswa ${currentUser.kelas_dipegang}`;
+                
+            } else if (currentUser.role === 'Guru Mapel') {
+                // Guru mapel bisa akses semua kelas
+                console.log('🎯 Guru mapel detected, full access to view');
+                roleInfo.innerHTML = `👨‍🏫 <strong>Guru Mata Pelajaran:</strong> Anda dapat melihat semua kelas tetapi tidak dapat mengelola data siswa`;
+                roleInfo.style.display = 'flex';
+                roleInfo.className = 'role-info guru-mapel';
+                
+                // Disable tambah dan edit untuk guru mapel
+                btnTambah.disabled = true;
+                btnTambah.style.opacity = '0.6';
+                
+                document.getElementById('actionInfo').textContent = 'Lihat semua kelas';
+                document.getElementById('tableInfo').textContent = 'Data semua siswa (view only)';
+                
+            } else if (currentUser.role === 'Admin') {
+                // Admin bisa akses semua
+                console.log('🎯 Admin detected, full access');
+                roleInfo.innerHTML = `👨‍💼 <strong>Administrator:</strong> Akses penuh untuk mengelola semua data siswa`;
+                roleInfo.style.display = 'flex';
+                roleInfo.className = 'role-info admin';
+                
+                document.getElementById('actionInfo').textContent = 'Akses penuh admin';
+                document.getElementById('tableInfo').textContent = 'Data semua siswa';
+            }
+        }
+
+        async function loadSiswa() {
+            if (isLoading) return;
+            
+            isLoading = true;
+            const btnTampilkan = document.getElementById('btnTampilkan');
+            const btnTampilkanText = document.getElementById('btnTampilkanText');
+            const btnTampilkanLoading = document.getElementById('btnTampilkanLoading');
+            
+            // Show loading state
+            btnTampilkan.disabled = true;
+            btnTampilkanText.style.display = 'none';
+            btnTampilkanLoading.style.display = 'inline-block';
+            
+            let selectedKelas = document.getElementById('filterKelas').value;
+            
+            // Untuk guru kelas, gunakan kelas_dipegang (force)
+            if (currentUser.role === 'Guru Kelas' && currentUser.kelas_dipegang) {
+                selectedKelas = currentUser.kelas_dipegang.replace('A', '');
+                console.log('🔒 Guru kelas - forced class:', selectedKelas);
+            }
+            
+            console.log('📊 Loading siswa for kelas:', selectedKelas);
+            
+            try {
+                // Query data siswa
+                let query = supabase.from('siswa').select('*');
+                
+                // Filter by kelas jika bukan "all"
+                if (selectedKelas !== 'all') {
+                    query = query.eq('kelas', selectedKelas);
+                    console.log('🔍 Filtering by class:', selectedKelas);
+                }
+                
+                const { data: siswa, error } = await query;
+                
+                console.log('📋 Query result:', { 
+                    data: siswa ? `Array(${siswa.length})` : 'null', 
+                    error: error,
+                    count: siswa ? siswa.length : 0 
+                });
+                
+                if (error) {
+                    console.error('❌ Error loading siswa:', error);
+                    showError('Gagal memuat data siswa: ' + error.message);
+                    return;
+                }
+                
+                if (!siswa) {
+                    console.log('⚠️ No data returned from query');
+                    showError('Tidak ada data yang dikembalikan dari database');
+                    return;
+                }
+                
+                console.log('✅ Siswa loaded:', siswa.length, 'records');
+                
+                // Debug: Show first 3 records
+                if (siswa.length > 0) {
+                    console.log('📝 Sample data:', siswa.slice(0, 3));
+                }
+                
+                displaySiswa(siswa);
+                updateStats(siswa, selectedKelas);
+                
+            } catch (error) {
+                console.error('💥 Error in loadSiswa:', error);
+                showError('Terjadi kesalahan sistem: ' + error.message);
+            } finally {
+                // Hide loading state
+                isLoading = false;
+                btnTampilkan.disabled = false;
+                btnTampilkanText.style.display = 'inline-block';
+                btnTampilkanLoading.style.display = 'none';
+            }
+        }
+
+        function displaySiswa(siswa) {
+            const tbody = document.getElementById('siswaTableBody');
+            
+            console.log('🎨 Displaying siswa data...');
+            
+            if (!siswa || siswa.length === 0) {
+                console.log('📭 No students to display');
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="6">
+                            <div class="empty-state">
+                                <div class="empty-state-icon">📝</div>
+                                <p>Tidak ada data siswa untuk kelas yang dipilih</p>
+                                <small>Silakan pilih kelas lain atau tambah data siswa</small>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+            
+            console.log('🖋️ Rendering', siswa.length, 'students to table');
+            
+            tbody.innerHTML = siswa.map((siswa, index) => {
+                const canEdit = currentUser.role !== 'Guru Mapel';
+                
+                return `
+                    <tr style="border-bottom: 1px solid #e2e8f0; transition: background 0.3s;">
+                        <td style="padding: 12px; font-family: monospace; font-weight: 500;">${siswa.id_siswa}</td>
+                        <td style="padding: 12px;">
+                            <strong>${siswa.nama_siswa}</strong>
+                        </td>
+                        <td style="padding: 12px;">
+                            ${siswa.jk === 'L' ? '👦 Laki-laki' : '👧 Perempuan'}
+                        </td>
+                        <td style="padding: 12px;">
+                            <span class="kelas-badge">Kelas ${siswa.kelas}</span>
+                        </td>
+                        <td style="padding: 12px;">
+                            <span class="status-badge ${siswa.status ? 'active' : 'inactive'}">
+                                ${siswa.status ? '✅ Aktif' : '❌ Non-Aktif'}
+                            </span>
+                        </td>
+                        <td style="padding: 12px;">
+                            ${canEdit ? `
+                                <button onclick="editSiswa('${siswa.id_siswa}')" class="btn-edit">
+                                    ✏️ Edit
+                                </button>
+                                <button onclick="deleteSiswa('${siswa.id_siswa}')" class="btn-delete">
+                                    🗑️ Hapus
+                                </button>
+                            ` : `
+                                <span style="color: #718096; font-size: 12px;">View Only</span>
+                            `}
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+            
+            console.log('✅ Table rendered successfully');
+        }
+
+        function updateStats(siswa, selectedKelas) {
+            const totalSiswa = siswa ? siswa.length : 0;
+            const siswaAktif = siswa ? siswa.filter(s => s.status).length : 0;
+            
+            console.log('📈 Updating stats:', { totalSiswa, siswaAktif, selectedKelas });
+            
+            document.getElementById('totalSiswaCount').textContent = totalSiswa;
+            document.getElementById('siswaAktifCount').textContent = siswaAktif;
+            
+            // Tampilkan info kelas yang sesuai dengan role
+            if (currentUser.role === 'Guru Kelas' && currentUser.kelas_dipegang) {
+                document.getElementById('kelasTerpilih').textContent = currentUser.kelas_dipegang;
+            } else {
+                document.getElementById('kelasTerpilih').textContent = selectedKelas === 'all' ? 'Semua Kelas' : `Kelas ${selectedKelas}`;
+            }
+            
+            document.getElementById('actionInfo').textContent = totalSiswa > 0 ? `${totalSiswa} Data` : 'Data Kosong';
+        }
+
+        function editSiswa(idSiswa) {
+            console.log('✏️ Edit siswa:', idSiswa);
+            
+            if (currentUser.role === 'Guru Mapel') {
+                alert('❌ Akses ditolak: Guru mapel tidak dapat mengedit data siswa');
+                return;
+            }
+            
+            alert(`✏️ Edit siswa: ${idSiswa}\n\nFitur edit data siswa dalam pengembangan.`);
+        }
+
+        function deleteSiswa(idSiswa) {
+            console.log('🗑️ Delete siswa:', idSiswa);
+            
+            if (currentUser.role === 'Guru Mapel') {
+                alert('❌ Akses ditolak: Guru mapel tidak dapat menghapus data siswa');
+                return;
+            }
+            
+            if (confirm(`🗑️ Apakah Anda yakin ingin menghapus siswa dengan ID: ${idSiswa}?`)) {
+                alert(`Hapus siswa: ${idSiswa}\n\nFitur hapus data siswa dalam pengembangan.`);
+            }
+        }
+
+        function exportData() {
+            console.log('📊 Export data requested');
+            alert('📊 Fitur export data ke Excel dalam pengembangan\n\nData akan diexport dalam format .xlsx');
+        }
+
+        function tambahSiswa() {
+            console.log('👥 Tambah siswa requested');
+            
+            if (currentUser.role === 'Guru Mapel') {
+                alert('❌ Akses ditolak: Guru mapel tidak dapat menambah siswa');
+                return;
+            }
+            
+            alert('👥 Fitur tambah siswa baru dalam pengembangan\n\nForm tambah siswa akan segera tersedia');
+        }
+
+        function showError(message) {
+            console.error('❌ Displaying error:', message);
+            const tbody = document.getElementById('siswaTableBody');
+            tbody.innerHTML = `
+                <tr>
+                    <td colspan="6">
+                        <div class="empty-state">
+                            <div class="empty-state-icon">❌</div>
+                            <p>${message}</p>
+                            <small>Silakan refresh halaman dan coba lagi</small>
+                        </div>
+                    </td>
+                </tr>
+            `;
+        }
+
+        function logout() {
+            console.log('🚪 Logging out...');
+            localStorage.removeItem('user');
+            localStorage.removeItem('isLoggedIn');
+            window.location.href = '../index.html';
+        }
+
+        // Load manajemen kelas when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('🚀 Manajemen Kelas page loaded');
+            loadManajemenKelas();
+        });
+    </script>
+</body>
+</html>
