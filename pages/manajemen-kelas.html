@@ -415,6 +415,19 @@
             color: #276749;
         }
 
+        /* Kelas Badge */
+        .kelas-badge {
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 600;
+            background: #e9d8fd;
+            color: #553c9a;
+            display: inline-block;
+            text-align: center;
+            min-width: 60px;
+        }
+
         /* Responsive */
         @media (max-width: 768px) {
             .filter-grid {
@@ -574,7 +587,7 @@
                         <div class="filter-group">
                             <label class="filter-label">Kelas</label>
                             <select id="filterKelas" class="filter-select" onchange="loadDataSiswa()">
-                                <option value="">Pilih Kelas</option>
+                                <option value="">Semua Kelas</option>
                                 <option value="1">Kelas 1</option>
                                 <option value="2">Kelas 2</option>
                                 <option value="3">Kelas 3</option>
@@ -635,6 +648,7 @@
                                     <th style="width: 50px;">No</th>
                                     <th style="width: 120px;">NIS</th>
                                     <th>Nama Siswa</th>
+                                    <th style="width: 80px;">Kelas</th>
                                     <th style="width: 100px;">Jenis Kelamin</th>
                                     <th style="width: 150px;">TTL</th>
                                     <th style="width: 200px;">Alamat</th>
@@ -644,7 +658,7 @@
                             </thead>
                             <tbody id="siswaTableBody">
                                 <tr>
-                                    <td colspan="8">
+                                    <td colspan="9">
                                         <div class="empty-state">
                                             <div class="empty-state-icon">👥</div>
                                             <p>Belum ada data untuk ditampilkan</p>
@@ -769,7 +783,17 @@
         function setupFilterByRole() {
             const filterKelas = document.getElementById('filterKelas');
             
-            if (currentUser.role === 'Guru Kelas' && currentUser.kelas_dipegang) {
+            if (currentUser.role === 'Admin') {
+                // Admin bisa melihat semua kelas
+                filterKelas.disabled = false;
+                filterKelas.style.backgroundColor = '';
+                console.log('🛡️ Admin - dapat melihat semua kelas');
+                
+                // Auto load data untuk semua kelas
+                setTimeout(() => {
+                    loadDataSiswa();
+                }, 500);
+            } else if (currentUser.role === 'Guru Kelas' && currentUser.kelas_dipegang) {
                 const kelasAngka = currentUser.kelas_dipegang.replace('A', '');
                 filterKelas.value = kelasAngka;
                 filterKelas.disabled = true;
@@ -787,16 +811,11 @@
             const kelas = document.getElementById('filterKelas').value;
             const statusFilter = document.getElementById('filterStatus').value;
             
-            if (!kelas) {
-                showNotification('❌ Harap pilih kelas terlebih dahulu', 'error', 3000);
-                return;
-            }
-            
             // Show loading
             const tbody = document.getElementById('siswaTableBody');
             tbody.innerHTML = `
                 <tr>
-                    <td colspan="8">
+                    <td colspan="9">
                         <div style="text-align: center; padding: 40px; color: #718096;">
                             <div class="loading-spinner" style="margin: 0 auto 10px;"></div>
                             <p>Memuat data siswa...</p>
@@ -808,12 +827,16 @@
             try {
                 console.log('📊 Loading data siswa...', { kelas, statusFilter });
                 
-                // Build query berdasarkan filter status
+                // Build query berdasarkan filter status dan kelas
                 let query = supabase
                     .from('siswa')
                     .select('*')
-                    .eq('kelas', kelas)
                     .order('nama_siswa');
+                
+                // Filter berdasarkan kelas jika dipilih (kecuali untuk Admin yang memilih "Semua Kelas")
+                if (kelas) {
+                    query = query.eq('kelas', kelas);
+                }
                 
                 if (statusFilter === 'active') {
                     query = query.eq('status', true);
@@ -846,7 +869,7 @@
                 // Show error state
                 tbody.innerHTML = `
                     <tr>
-                        <td colspan="8">
+                        <td colspan="9">
                             <div class="empty-state">
                                 <div class="empty-state-icon">❌</div>
                                 <p>Gagal memuat data siswa</p>
@@ -866,7 +889,6 @@
             } else {
                 currentData.filteredSiswa = currentData.siswa.filter(siswa => 
                     siswa.nama_siswa.toLowerCase().includes(searchTerm) ||
-                    siswa.nis.toLowerCase().includes(searchTerm) ||
                     siswa.id_siswa.toLowerCase().includes(searchTerm)
                 );
             }
@@ -880,11 +902,11 @@
             if (!currentData.filteredSiswa || currentData.filteredSiswa.length === 0) {
                 tbody.innerHTML = `
                     <tr>
-                        <td colspan="8">
+                        <td colspan="9">
                             <div class="empty-state">
                                 <div class="empty-state-icon">🔍</div>
                                 <p>Tidak ada data siswa</p>
-                                <small>${currentData.siswa.length === 0 ? 'Kelas ini belum memiliki siswa' : 'Data tidak ditemukan'}</small>
+                                <small>${currentData.siswa.length === 0 ? 'Belum ada data siswa' : 'Data tidak ditemukan'}</small>
                             </div>
                         </td>
                     </tr>
@@ -904,13 +926,13 @@
                     <tr>
                         <td style="text-align: center;">${index + 1}</td>
                         <td>
-                            <div class="student-id">${siswa.nis}</div>
+                            <div class="student-id">${siswa.id_siswa}</div>
                         </td>
                         <td>
                             <div class="student-name">${siswa.nama_siswa}</div>
-                            <div style="font-size: 12px; color: #718096;">
-                                ID: ${siswa.id_siswa}
-                            </div>
+                        </td>
+                        <td style="text-align: center;">
+                            <span class="kelas-badge">${siswa.kelas}</span>
                         </td>
                         <td>
                             ${siswa.jk === 'L' ? '👦 Laki-laki' : '👧 Perempuan'}
@@ -949,7 +971,13 @@
             const siswaPerempuan = currentData.siswa.filter(s => s.jk === 'P').length;
             
             document.getElementById('totalSiswa').textContent = totalSiswa;
-            document.getElementById('infoKelas').textContent = `Kelas ${kelas}`;
+            
+            if (kelas) {
+                document.getElementById('infoKelas').textContent = `Kelas ${kelas}`;
+            } else {
+                document.getElementById('infoKelas').textContent = `Semua Kelas`;
+            }
+            
             document.getElementById('siswaAktif').textContent = siswaAktif;
             document.getElementById('siswaLaki').textContent = siswaLaki;
             document.getElementById('siswaPerempuan').textContent = siswaPerempuan;
@@ -959,7 +987,7 @@
             const kelas = document.getElementById('filterKelas').value;
             const searchTerm = document.getElementById('filterSearch').value;
             
-            let title = `Data Siswa Kelas ${kelas}`;
+            let title = kelas ? `Data Siswa Kelas ${kelas}` : `Data Semua Siswa`;
             let description = `${currentData.filteredSiswa.length} siswa`;
             
             if (searchTerm) {
@@ -977,28 +1005,30 @@
                 return;
             }
 
-            const kelas = document.getElementById('filterKelas').value;
-            if (!kelas) {
-                showNotification('❌ Harap pilih kelas terlebih dahulu', 'error', 3000);
-                return;
-            }
-
             const result = await showTambahSiswaForm();
             if (!result) return;
 
-            const { nis, nama, jk, ttl, alamat } = result;
+            const { id_siswa, nama, kelas, jk, ttl, alamat } = result;
 
             try {
-                // Generate ID siswa unik
-                const idSiswa = `S${kelas}${nis}`;
-                
+                // Cek apakah ID siswa sudah ada
+                const { data: existingSiswa, error: checkError } = await supabase
+                    .from('siswa')
+                    .select('id_siswa')
+                    .eq('id_siswa', id_siswa)
+                    .single();
+
+                if (existingSiswa) {
+                    showNotification('❌ ID Siswa sudah terdaftar di sistem', 'error', 4000);
+                    return;
+                }
+
                 // Prepare data siswa
                 const siswaData = {
-                    id_siswa: idSiswa,
-                    nis: nis,
+                    id_siswa: id_siswa,
                     nama_siswa: nama,
-                    jk: jk,
                     kelas: kelas,
+                    jk: jk,
                     ttl: ttl || '',
                     alamat: alamat || '',
                     status: true,
@@ -1013,7 +1043,7 @@
 
                 if (error) {
                     if (error.code === '23505') {
-                        showNotification('❌ NIS sudah terdaftar di sistem', 'error', 4000);
+                        showNotification('❌ ID Siswa sudah terdaftar di sistem', 'error', 4000);
                         return;
                     }
                     throw error;
@@ -1072,15 +1102,28 @@
                     
                     <div style="display: grid; gap: 15px;">
                         <div class="form-group">
-                            <label class="form-label">NIS *</label>
-                            <input type="text" id="inputNIS" class="form-input" 
-                                   placeholder="Masukkan NIS" required>
+                            <label class="form-label">ID Siswa (NIS) *</label>
+                            <input type="text" id="inputIDSiswa" class="form-input" 
+                                   placeholder="Masukkan ID Siswa/NIS" required>
+                            <small style="color: #718096; font-size: 12px;">ID Siswa akan digunakan sebagai NIS</small>
                         </div>
                         
                         <div class="form-group">
                             <label class="form-label">Nama Lengkap *</label>
                             <input type="text" id="inputNama" class="form-input" 
                                    placeholder="Masukkan nama lengkap" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Kelas *</label>
+                            <select id="inputKelas" class="form-select">
+                                <option value="1">Kelas 1</option>
+                                <option value="2">Kelas 2</option>
+                                <option value="3">Kelas 3</option>
+                                <option value="4">Kelas 4</option>
+                                <option value="5">Kelas 5</option>
+                                <option value="6">Kelas 6</option>
+                            </select>
                         </div>
                         
                         <div class="form-group">
@@ -1119,19 +1162,20 @@
 
                 // Event listeners
                 document.getElementById('submitTambah').addEventListener('click', () => {
-                    const nis = document.getElementById('inputNIS').value.trim();
+                    const id_siswa = document.getElementById('inputIDSiswa').value.trim();
                     const nama = document.getElementById('inputNama').value.trim();
+                    const kelas = document.getElementById('inputKelas').value;
                     const jk = document.getElementById('inputJK').value;
                     const ttl = document.getElementById('inputTTL').value.trim();
                     const alamat = document.getElementById('inputAlamat').value.trim();
 
-                    if (!nis || !nama) {
-                        showNotification('❌ NIS dan Nama harus diisi', 'error', 3000);
+                    if (!id_siswa || !nama) {
+                        showNotification('❌ ID Siswa dan Nama harus diisi', 'error', 3000);
                         return;
                     }
 
                     overlay.remove();
-                    resolve({ nis, nama, jk, ttl, alamat });
+                    resolve({ id_siswa, nama, kelas, jk, ttl, alamat });
                 });
 
                 document.getElementById('cancelTambah').addEventListener('click', () => {
@@ -1164,11 +1208,12 @@
             const result = await showEditSiswaForm(siswa);
             if (!result) return;
 
-            const { nama, jk, ttl, alamat, status } = result;
+            const { nama, kelas, jk, ttl, alamat, status } = result;
 
             try {
                 const updateData = {
                     nama_siswa: nama,
+                    kelas: kelas,
                     jk: jk,
                     ttl: ttl || '',
                     alamat: alamat || '',
@@ -1224,14 +1269,25 @@
                     <h3 style="margin: 0 0 20px 0; color: #2d3748;">✏️ Edit Data Siswa</h3>
                     
                     <div style="margin-bottom: 15px; padding: 10px; background: #f7fafc; border-radius: 6px;">
-                        <strong>NIS:</strong> ${siswa.nis}<br>
-                        <strong>ID:</strong> ${siswa.id_siswa}
+                        <strong>ID Siswa (NIS):</strong> ${siswa.id_siswa}
                     </div>
                     
                     <div style="display: grid; gap: 15px;">
                         <div class="form-group">
                             <label class="form-label">Nama Lengkap *</label>
                             <input type="text" id="editNama" class="form-input" value="${siswa.nama_siswa}" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Kelas *</label>
+                            <select id="editKelas" class="form-select">
+                                <option value="1" ${siswa.kelas === '1' ? 'selected' : ''}>Kelas 1</option>
+                                <option value="2" ${siswa.kelas === '2' ? 'selected' : ''}>Kelas 2</option>
+                                <option value="3" ${siswa.kelas === '3' ? 'selected' : ''}>Kelas 3</option>
+                                <option value="4" ${siswa.kelas === '4' ? 'selected' : ''}>Kelas 4</option>
+                                <option value="5" ${siswa.kelas === '5' ? 'selected' : ''}>Kelas 5</option>
+                                <option value="6" ${siswa.kelas === '6' ? 'selected' : ''}>Kelas 6</option>
+                            </select>
                         </div>
                         
                         <div class="form-group">
@@ -1277,6 +1333,7 @@
 
                 document.getElementById('submitEdit').addEventListener('click', () => {
                     const nama = document.getElementById('editNama').value.trim();
+                    const kelas = document.getElementById('editKelas').value;
                     const jk = document.getElementById('editJK').value;
                     const ttl = document.getElementById('editTTL').value.trim();
                     const alamat = document.getElementById('editAlamat').value.trim();
@@ -1288,7 +1345,7 @@
                     }
 
                     overlay.remove();
-                    resolve({ nama, jk, ttl, alamat, status });
+                    resolve({ nama, kelas, jk, ttl, alamat, status });
                 });
 
                 document.getElementById('cancelEdit').addEventListener('click', () => {
@@ -1346,20 +1403,21 @@
             }
 
             const kelas = document.getElementById('filterKelas').value;
-            if (!kelas) {
-                showNotification('❌ Harap pilih kelas terlebih dahulu', 'error', 3000);
-                return;
-            }
 
             try {
                 showNotification('📤 Menyiapkan data siswa untuk export...', 'info', 2000);
 
                 // Ambil data siswa
-                const { data: siswa, error } = await supabase
+                let query = supabase
                     .from('siswa')
                     .select('*')
-                    .eq('kelas', kelas)
                     .order('nama_siswa');
+
+                if (kelas) {
+                    query = query.eq('kelas', kelas);
+                }
+
+                const { data: siswa, error } = await query;
 
                 if (error) throw error;
 
@@ -1369,14 +1427,15 @@
                 }
 
                 // Format CSV
-                let csvContent = 'Data Siswa - Kelas ' + kelas + '\n\n';
-                csvContent += 'No,NIS,Nama Siswa,Jenis Kelamin,TTL,Alamat,Status\n';
+                let csvContent = 'Data Siswa' + (kelas ? ' - Kelas ' + kelas : '') + '\n\n';
+                csvContent += 'No,ID Siswa (NIS),Nama Siswa,Kelas,Jenis Kelamin,TTL,Alamat,Status\n';
                 
                 siswa.forEach((siswa, index) => {
                     const row = [
                         index + 1,
-                        siswa.nis,
+                        siswa.id_siswa,
                         `"${siswa.nama_siswa}"`,
+                        siswa.kelas,
                         siswa.jk === 'L' ? 'Laki-laki' : 'Perempuan',
                         `"${siswa.ttl || ''}"`,
                         `"${siswa.alamat || ''}"`,
@@ -1386,7 +1445,7 @@
                 });
 
                 // Download file
-                downloadCSV(csvContent, `data_siswa_kelas_${kelas}.csv`);
+                downloadCSV(csvContent, `data_siswa${kelas ? '_kelas_' + kelas : ''}.csv`);
                 showNotification('✅ Data siswa berhasil diexport!', 'success', 3000);
 
             } catch (error) {
@@ -1403,21 +1462,22 @@
             }
 
             const kelas = document.getElementById('filterKelas').value;
-            if (!kelas) {
-                showNotification('❌ Harap pilih kelas terlebih dahulu', 'error', 3000);
-                return;
-            }
 
             try {
                 showNotification('📄 Membuat PDF data siswa...', 'info', 2000);
 
                 // Ambil data siswa
-                const { data: siswa, error } = await supabase
+                let query = supabase
                     .from('siswa')
                     .select('*')
-                    .eq('kelas', kelas)
                     .eq('status', true)
                     .order('nama_siswa');
+
+                if (kelas) {
+                    query = query.eq('kelas', kelas);
+                }
+
+                const { data: siswa, error } = await query;
 
                 if (error) throw error;
 
@@ -1433,7 +1493,7 @@
                 // Header
                 doc.setFontSize(16);
                 doc.setTextColor(40, 40, 40);
-                doc.text(`DATA SISWA KELAS ${kelas}`, 105, 15, { align: 'center' });
+                doc.text(`DATA SISWA${kelas ? ' KELAS ' + kelas : ''}`, 105, 15, { align: 'center' });
                 
                 doc.setFontSize(10);
                 doc.setTextColor(100, 100, 100);
@@ -1442,8 +1502,9 @@
                 // Prepare data untuk tabel
                 const tableData = siswa.map((siswa, index) => [
                     index + 1,
-                    siswa.nis,
+                    siswa.id_siswa,
                     siswa.nama_siswa,
+                    siswa.kelas,
                     siswa.jk === 'L' ? 'Laki-laki' : 'Perempuan',
                     siswa.ttl || '-',
                     siswa.alamat || '-'
@@ -1452,7 +1513,7 @@
                 // Buat tabel
                 doc.autoTable({
                     startY: 30,
-                    head: [['No', 'NIS', 'Nama Siswa', 'Jenis Kelamin', 'TTL', 'Alamat']],
+                    head: [['No', 'ID Siswa (NIS)', 'Nama Siswa', 'Kelas', 'Jenis Kelamin', 'TTL', 'Alamat']],
                     body: tableData,
                     theme: 'grid',
                     styles: { fontSize: 8 },
@@ -1460,7 +1521,7 @@
                 });
 
                 // Simpan PDF
-                doc.save(`data_siswa_kelas_${kelas}.pdf`);
+                doc.save(`data_siswa${kelas ? '_kelas_' + kelas : ''}.pdf`);
                 showNotification('✅ PDF berhasil dibuat!', 'success', 3000);
 
             } catch (error) {
@@ -1477,10 +1538,6 @@
             }
 
             const kelas = document.getElementById('filterKelas').value;
-            if (!kelas) {
-                showNotification('❌ Harap pilih kelas terlebih dahulu', 'error', 3000);
-                return;
-            }
 
             // Buat window print
             const printWindow = window.open('', '_blank');
@@ -1489,7 +1546,7 @@
             printWindow.document.write(`
                 <html>
                     <head>
-                        <title>Data Siswa Kelas ${kelas}</title>
+                        <title>Data Siswa${kelas ? ' Kelas ' + kelas : ''}</title>
                         <style>
                             body { 
                                 font-family: Arial, sans-serif; 
@@ -1536,6 +1593,17 @@
                             tr:nth-child(even) { 
                                 background-color: #f9f9f9; 
                             }
+                            .kelas-badge {
+                                padding: 4px 8px;
+                                border-radius: 4px;
+                                font-size: 11px;
+                                font-weight: 600;
+                                background: #e9d8fd;
+                                color: #553c9a;
+                                display: inline-block;
+                                text-align: center;
+                                min-width: 50px;
+                            }
                             .action-buttons { 
                                 margin-top: 20px; 
                                 text-align: center;
@@ -1566,7 +1634,7 @@
                     </head>
                     <body>
                         <div class="print-header">
-                            <h1>DATA SISWA KELAS ${kelas}</h1>
+                            <h1>DATA SISWA${kelas ? ' KELAS ' + kelas : ''}</h1>
                             <h3>SDN Karangsari</h3>
                             <p>Dicetak pada: ${new Date().toLocaleDateString('id-ID')} ${new Date().toLocaleTimeString('id-ID')}</p>
                         </div>
